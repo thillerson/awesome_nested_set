@@ -354,8 +354,16 @@ module CollectiveIdea
 
         # Returns a set of only this entry's immediate children
         def children
-          nested_set_scope({:order => "#{quoted_left_column_name} DESC"}).scoped :conditions => {parent_column_name => self}
+          nested_set_scope.scoped :conditions => {parent_column_name => self}
         end
+        alias children_last_first children
+        alias children_in_reverse_order_added children
+        
+        def children_reversed
+          nested_set_scope(({:order => "#{quoted_left_column_name} DESC"})).scoped :conditions => {parent_column_name => self}
+        end
+        alias children_first_last children_reversed
+        alias children_in_order_added children_reversed
 
         def is_descendant_of?(other)
           other.left < self.left && self.left < other.right && same_scope?(other)
