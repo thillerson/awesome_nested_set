@@ -354,7 +354,7 @@ module CollectiveIdea
 
         # Returns a set of only this entry's immediate children
         def children
-          nested_set_scope.scoped :conditions => {parent_column_name => self}
+          nested_set_scope({:order => "#{quoted_left_column_name} DESC"}).scoped :conditions => {parent_column_name => self}
         end
 
         def is_descendant_of?(other)
@@ -446,8 +446,8 @@ module CollectiveIdea
         # All nested set queries should use this nested_set_scope, which performs finds on
         # the base ActiveRecord class, using the :scope declared in the acts_as_nested_set
         # declaration.
-        def nested_set_scope
-          options = {:order => quoted_left_column_name}
+        def nested_set_scope(other_options={})
+          options = {:order => quoted_left_column_name}.merge(other_options)
           scope = acts_as_nested_set_options[:scope]
           options[:conditions] = if Array === scope
             scope.inject({}) {|conditions,attr| conditions.merge attr => self[attr] }

@@ -186,6 +186,15 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     category.children.each {|c| assert_equal category.id, c.parent_id }
   end
   
+  def test_children_are_returned_in_added_order
+    root = Category.create :name => 'root'
+    child_one = Category.create :name => 'child one'
+    child_one.move_to_child_of root
+    child_two = Category.create :name => 'child two'
+    child_two.move_to_child_of root
+    assert_equal child_one.id, root.children.first.id
+  end
+  
   def test_is_or_is_ancestor_of?
     assert categories(:top_level).is_or_is_ancestor_of?(categories(:child_1))
     assert categories(:top_level).is_or_is_ancestor_of?(categories(:child_2_1))
